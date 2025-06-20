@@ -1,15 +1,18 @@
 package com.lcwd.rating.entities;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
+
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
+@Getter
 @Document("user_ratings")
 public class Rating {
     
@@ -19,4 +22,6 @@ public class Rating {
     private String hotelId ;
     private int rating ;
     private String feedback ;
+
+
 }
