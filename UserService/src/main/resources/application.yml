@@ -3,13 +3,12 @@ server:
 
 spring:
   application:
-    name: USER-SERVICE
+    name: USERSERVICE
   datasource:
     url: jdbc:mysql://localhost:3306/microservices
     username: root
     password: Albert9313@
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,15 +16,62 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+  config:
+    import: optional:configserver:http://localhost:8085
 
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      default-zone : http://localhost:8761/eureka
+# CIRCUIT BREAKER CONFIG
 
 
+
+
+
+
+
+
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      default-zone: http://localhost:8761/eureka
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotelBreaker :
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 6s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: COUNT_BASED
+
+  retry:
+    instances:
+      ratingHotelService :
+        max-attempts: 3
+        wait-duration: 5s
+
+  ratelimiter:
+    instances:
+      userRateLimiter :
+        limit-for-period: 4
+        limit-refresh-period: 4s
+        timeout-duration: 4s
 
